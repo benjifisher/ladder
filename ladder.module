@@ -152,6 +152,11 @@ function ladder_rung_save(&$myobj) {
  * Callback for ladder/about.
  */
 function ladder_page_about() {
+  // If there is a menu link to this lesson, the link becomes the last part
+  // of the active trail, and the link name becomes the page title.
+  // Thus, we must explicitly set the page title to be the lesson title.
+  drupal_set_title('About the Drupal Ladder');
+
   return 'TODO explain ladder here.';
 }
 
