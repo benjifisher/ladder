@@ -145,6 +145,16 @@ function ladder_rung_save(&$myobj) {
 }
 
 //-------------------------------------------//
+// Features hooks                            //
+//-------------------------------------------//
+
+/**
+ * TODO Each rung has a dependency on the lesson it links to. If the lesson linked to is 
+ *   not included in this module, check the modules included as dependencies for this component 
+ *   (lesson). If it's not in either place, do a drupal_set_message() to warn the author.
+ */
+
+//-------------------------------------------//
 // Lessons                                   //
 //-------------------------------------------//
 
