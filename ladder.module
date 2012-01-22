@@ -38,6 +38,12 @@ function ladder_menu() {
     'menu_name' => 'main-menu',
     'type' => MENU_CALLBACK,
   ); 
+  $items['ladder/about'] = array(
+    'title' => 'About the Drupal Ladder',
+    'page callback' => 'ladder_page_about',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  ); 
 
   return $items;
 }
@@ -141,6 +147,13 @@ function ladder_rung_save(&$myobj) {
 //-------------------------------------------//
 // Lessons                                   //
 //-------------------------------------------//
+
+/**
+ * Callback for ladder/about.
+ */
+function ladder_page_about() {
+  return 'TODO explain ladder here.';
+}
 
 /**
  * The ladder page uses a simple system settings form.
