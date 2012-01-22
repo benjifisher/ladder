@@ -1,0 +1,207 @@
+<?php
+/**
+ * @file ladder.module
+ */
+
+//-------------------------------------------//
+// Drupal core hooks                         //
+//-------------------------------------------//
+
+/**
+ * Implementation of hook_help()
+ */
+function ladder_help($path, $arg) {
+  if ($path == 'admin/help#ladder') {
+    $txt = 'Lessons for learning about and contributing to Drupal.'; 
+    $output = t($txt);
+    return $output;
+  }
+}
+/**
+ * Implementation of hook_menu().
+ */
+function ladder_menu() {
+  $items = array();
+
+  $items['admin/structure/ladder/%/export'] = array(
+    'title' => 'export',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ladder_export_rung', 3), 
+    'access arguments' => array('export ladder'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['ladder'] = array(
+    'title' => 'Drupal Ladder',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ladder_page_default'),
+    'access arguments' => array('access content'),
+    'menu_name' => 'main-menu',
+    'type' => MENU_CALLBACK,
+  ); 
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function ladder_perm() {
+  return array('administer ladder', 'manage ladder', 'export ladder');
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+/*
+function ladder_theme() {
+  return array(
+  );  
+}
+// */
+
+
+//--------------------------------------------------/
+// Ctools plugin                                    /
+//--------------------------------------------------/
+/**
+ * Implmenentation of hook_ctools_plugin_directory.
+ */
+function ladder_ctools_plugin_directory($module, $plugin) {
+  if ($plugin == 'export_ui') {
+    return 'plugins/'. $plugin;
+  }
+}
+
+/**
+* Implementation of hook_ctools_plugin_api().
+*
+* Tell CTools that we support the default_mymodule_presets API.
+*/
+function ladder_ctools_plugin_api($owner, $api) {
+  if ($owner == 'ladder' && $api == 'default_ladder_rung') {
+    return array('version' => 1);
+  }
+}
+
+//--------------------------------------------------/
+// Ctools export hooks                              /
+//--------------------------------------------------/
+
+/**
+ * Export a myobj and display it in a form.
+ * 
+ * @param $name
+ *  string, unique id for object
+ */
+function ladder_export_rung(&$form_state, $name) {
+  ctools_include('export');
+  $obj = ladder_rung_load($name);
+  drupal_set_title(check_plain($obj->description));
+  $code = ladder_rung_export($obj);
+  $lines = substr_count($code, "\n");
+
+  $form['export'] = array(
+    '#title' => t('Export data'),
+    '#type' => 'textarea',
+    '#value' => $code,
+    '#rows' => $lines,
+    '#description' => t('Copy the export text and paste it into another myobj using the import function.'),
+  );
+  return $form;
+}
+
+/**
+ * Load a single myobj.
+ */
+function ladder_rung_load($name) {
+  ctools_include('export');
+  $result = ctools_export_load_object('ladder_rung', 'names', array($name)); 
+  if (isset($result[$name])) {
+    return $result[$name];
+  }
+}
+
+/**
+ * Export a myobj.
+ */
+function ladder_rung_export($obj, $indent = '') {
+  ctools_include('export');
+  $output = ctools_export_object('ladder_rung', $obj, $indent);
+  return $output;
+}
+
+/**
+ * Save a single myobj.
+ */
+function ladder_rung_save(&$myobj) {
+    $update = (isset($myobj->sid) && is_numeric($myobj->sid)) ? array('sid') : array();
+      return drupal_write_record('ladder_rung', $myobj, $update);
+}
+
+//-------------------------------------------//
+// Lessons                                   //
+//-------------------------------------------//
+
+/**
+ * The ladder page uses a simple system settings form.
+ * 
+ * TODO Replace hardcoded ladder here with CSS.
+ */
+function ladder_page_default($form, &$form_state) {
+  $rungs = ladder_get_rungs();
+
+  // Create one checkbox per rung.
+  $form['ladder_top'] = array(
+    '#type' => 'item',
+    '#title' => '',
+    '#prefix' => '<div><div style="height:30px; width:150px; border:solid 1px black; margin-right: 20px; border-top:none; margin-top:30px;">',
+    '#suffix' => '</div></div>',
+  );
+  foreach ($rungs as $rung) {
+    $lesson = lessons_get($rung->lesson);
+    $form[$rung->name] = array(
+      '#type' => 'checkbox',
+      '#title' => t($rung->title) . ' (' . l(t('lesson'), "lessons/$rung->lesson")  . ')',
+      '#default_value' => variable_get($rung->name, FALSE),
+      //'#description' => t($rung->description),
+      '#prefix' => '<div><div style="height:30px; width:150px; border:solid 1px black; margin-right: 20px; float:left;"></div>',
+      '#suffix' => '</div></div>',
+    );
+  }
+  $form['ladder_bottom'] = array(
+    '#type' => 'item',
+    '#title' => '',
+    '#prefix' => '<div><div style="height:30px; width:150px; border:solid 1px black; margin-right: 20px; border-bottom:none; margin-bottom:30px;">',
+    '#suffix' => '</div></div>',
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * @param $name
+ *  string, rung name.
+ * 
+ * @return $rung, rung object.
+ */
+function ladder_get($name) {
+  ctools_include('export');
+  return ladder_rung_load($name);
+}
+
+/**
+ * This function enables us to auto load a rung object
+ * with a path like rung/%rung. 
+ */
+function rung_load($name) {
+  return ladder_get($name);  
+}
+
+/**
+ * @return $rungs
+ *  Objects, lesson objects.
+ */
+function ladder_get_rungs() {
+  ctools_include('export');
+  return ctools_export_load_object('ladder_rung'); 
+}

@@ -1,0 +1,99 @@
+<?php
+
+/**
+ * @file
+ *  Install ladder module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function ladder_schema() {
+  $schema['ladder_rung'] = array(
+    'description' => 'Table storing lesson (myobj), definitions.',
+    'export' => array(
+      'key' => 'name',
+      'key name' => 'Name',
+      'primary key' => 'rid',
+      'identifier' => 'rung',              // Exports will be as $rung
+      'default hook' => 'default_ladder',    // Function hook name.
+      'api' => array(
+        'owner' => 'ladder',
+        'api' => 'default_ladder',           // Base name for api include files.
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      // rung id
+      'rid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary ID field for the table. Not used for anything '
+                       . 'except internal lookups.',
+        'no export' => TRUE, // Do not export database-only keys.
+      ),
+      // name (machine, unique id)
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Unique ID for this rung object. Used to identify it programmatically.',
+      ),
+      // title (human readable)
+      'title' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Human readable rung title.',
+      ),
+      // description
+      'description' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Provide a brief overview.',
+      ),
+      // lesson
+      'lesson' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Related lesson.',
+      ),
+      // weight 
+      'weight' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0, 
+        'description' => 'Determine order of rungs.',
+      ),
+    ),
+    'primary key' => array('rid'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function ladder_uninstall() {
+  // TODO Remove ladder items from the variables table.  
+}
+
+/**
+ * Implements hook_update_N().
+ */
+/*
+function lessons_update_7001() {
+}
+// */

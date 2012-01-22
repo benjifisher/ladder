@@ -1,0 +1,13 @@
+name = Ladder
+description = Leadership ladder for learning about and contributing to Drupal.
+core = 7.x
+package = "Learn Drupal"
+project = "Ladder"
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = lessons
+
+files[] = ladder.install
+files[] = ladder.module
+files[] = plugins/export_ui/ladder_ctools_export_ui.inc
+files[] = plugins/export_ui/ladder_export_ui.class.php
