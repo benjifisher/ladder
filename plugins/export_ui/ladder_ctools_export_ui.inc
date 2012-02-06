@@ -53,14 +53,38 @@ function ladder_ctools_export_ui_form(&$form, &$form_state) {
     '#default_value' => $rung->description,
     '#maxlength' => 255,
   );
+  // @todo Add validation for this field.
+  $form['ladder'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Ladder name'),
+    '#description' => t('Comma separated list of ladders where this rung will appear. Ladders are specified in the path to the ladder like this: www.example.com/ladder/ladder-name.'),
+    '#default_value' => $rung->ladder,
+    '#required' => true,
+    '#maxlength' => 255,
+  );
   $form['lesson'] = array(
     '#type' => 'select',
     '#title' => t('Related lesson'),
-    '#description' => t('This rung of the ladder will link to the selcted lesson.'),
+    '#description' => t('This rung of the ladder will link to the selected lesson. (!administer. !create)', 
+      array('!administer' => l(t('Administer lessons'), 'admin/structure/lessons'), '!create' => l(t('Add a new lesson.'), 'admin/structure/lessons/add'))),
     '#default_value' => $rung->lesson,
     '#options' => lessons_get_lessons(TRUE),
     '#required' => true,
     '#maxlength' => 255,
+  );
+  $form['css_class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CSS Class'),
+    '#description' => t('CSS class or classes to be wrapped around rung.'),
+    '#default_value' => $rung->css_class,
+    '#maxlength' => 255,
+  );
+  $form['weight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Weight'),
+    '#description' => t('Determine sort order of this rungs relative to other rungs in the ladder.'),
+    '#default_value' => $rung->weight,
+    '#maxlength' => 4,
   );
 
 }

@@ -34,6 +34,14 @@ function ladder_schema() {
                        . 'except internal lookups.',
         'no export' => TRUE, // Do not export database-only keys.
       ),
+      // ladder name (machine readable)
+      'ladder' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Comma separated list of ladder names for ladders this rung applies to.',
+      ),
       // name (machine, unique id)
       'name' => array(
         'type' => 'varchar',
@@ -65,6 +73,14 @@ function ladder_schema() {
         'not null' => TRUE,
         'default' => '',
         'description' => 'Related lesson.',
+      ),
+      // CSS class
+      'css_class' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'CSS classes to be applied to this rung.',
       ),
       // weight 
       'weight' => array(

@@ -1,0 +1,36 @@
+/* ladder.css */
+
+/* Make rungs on the ladder form look like a ladder. */
+
+div.ladder-top {
+  height:30px; 
+  width:150px;
+  border:solid 1px black;
+  margin-right: 20px;
+  border-top:none;
+  margin-top:30px;
+}
+
+div.ladder-rung {
+ height:30px;
+ width:150px;
+ border:solid 1px black;
+ margin-right: 20px;
+ float:left;
+}
+
+div.ladder-bottom {
+  height:30px;
+  width:150px;
+  border:solid 1px black;
+  margin-right: 20px;
+  border-bottom:none;
+  margin-bottom:30px;
+}
+
+/* Default ladder status styling. */
+
+.ladder-in-development .ladder-rung { background-color: #E8E8E8; }
+.ladder-complete .ladder-rung { background-color: #D3F0D8; }
+.ladder-not-started .form-item { color: black; }
+.ladder-in-development .form-item { color: gray; }

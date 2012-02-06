@@ -30,7 +30,7 @@ function ladder_menu() {
     'access arguments' => array('export ladder'),
     'type' => MENU_CALLBACK,
   );
-  $items['ladder'] = array(
+  $items['ladder/%'] = array(
     'title' => 'Drupal Ladder',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('ladder_page_default'),
@@ -171,35 +171,40 @@ function ladder_page_about() {
 }
 
 /**
+ * // TODO Replace system settings form with real, multi-user form.
  * The ladder page uses a simple system settings form.
- * 
- * TODO Replace hardcoded ladder here with CSS.
  */
 function ladder_page_default($form, &$form_state) {
-  $rungs = ladder_get_rungs();
+  if ($ladder = arg(1)) {
+    $rungs = ladder_get_rungs($ladder);
+  }
 
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'ladder') . '/ladder.css',
+  );
   // Create one checkbox per rung.
   $form['ladder_top'] = array(
     '#type' => 'item',
     '#title' => '',
-    '#prefix' => '<div><div style="height:30px; width:150px; border:solid 1px black; margin-right: 20px; border-top:none; margin-top:30px;">',
+    '#prefix' => '<div class="ladder"><div class="ladder-top">',
     '#suffix' => '</div></div>',
   );
   foreach ($rungs as $rung) {
-    $lesson = lessons_get($rung->lesson);
+    $status = variable_get($rung->name, FALSE);
+    $status_class = ($status) ? 'ladder-complete' : 'ladder-not-started'; 
     $form[$rung->name] = array(
       '#type' => 'checkbox',
       '#title' => t($rung->title) . ' (' . l(t('lesson'), "lessons/$rung->lesson")  . ')',
-      '#default_value' => variable_get($rung->name, FALSE),
+      '#default_value' => $status,
       //'#description' => t($rung->description),
-      '#prefix' => '<div><div style="height:30px; width:150px; border:solid 1px black; margin-right: 20px; float:left;"></div>',
-      '#suffix' => '</div></div>',
+      '#prefix' => '<div class="ladder ' . $status_class . ' ' . $rung->css_class . '"><div class="ladder-rung"></div>',
+      '#suffix' => '</div>',
     );
   }
   $form['ladder_bottom'] = array(
     '#type' => 'item',
     '#title' => '',
-    '#prefix' => '<div><div style="height:30px; width:150px; border:solid 1px black; margin-right: 20px; border-bottom:none; margin-bottom:30px;">',
+    '#prefix' => '<div class="ladder"><div class="ladder-bottom">',
     '#suffix' => '</div></div>',
   );
 
@@ -226,10 +231,24 @@ function rung_load($name) {
 }
 
 /**
+ * @param $ladder
+ *  String. Ladder name.
+ * 
  * @return $rungs
  *  Objects, lesson objects.
  */
-function ladder_get_rungs() {
+function ladder_get_rungs($ladder = NULL) {
   ctools_include('export');
-  return ctools_export_load_object('ladder_rung'); 
+  $rungs = ctools_export_load_object('ladder_rung'); 
+
+  // Only return rungs for requested ladder. Return all if no ladder is specified.
+  if ($ladder) {
+    foreach ($rungs as $key => $rung) {
+      if (!in_array($ladder, explode(',', $rung->ladder))) {
+        unset($rungs[$key]);
+      }  
+    }
+  }
+
+  return $rungs;
 }
