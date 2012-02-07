@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Ladder lessons feature.
+ */
+
+include_once('ladder_lessons.features.inc');
