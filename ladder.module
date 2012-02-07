@@ -231,11 +231,15 @@ function rung_load($name) {
 }
 
 /**
+ * Return rungs ordered by weight from lightest to heaviest. 
+ *
+ * Note: Ctools returns an array of objects keyed by object name. This returns a numbereric array.
+ * 
  * @param $ladder
  *  String. Ladder name.
  * 
  * @return $rungs
- *  Objects, lesson objects.
+ *  Array of rung objects.
  */
 function ladder_get_rungs($ladder = NULL) {
   ctools_include('export');
@@ -249,6 +253,18 @@ function ladder_get_rungs($ladder = NULL) {
       }  
     }
   }
+  // Sort rungs by weight.
+  usort($rungs, '_ladder_cmp_rungs');
 
   return $rungs;
+}
+
+/**
+ * Compare rungs by weight.
+ */
+function _ladder_cmp_rungs($a, $b) {
+  if ($a->weight == $b->weight) {
+    return 0;
+  }
+  return ($a->weight < $b->weight) ? -1 : 1;
 }
