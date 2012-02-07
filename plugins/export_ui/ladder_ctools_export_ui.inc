@@ -75,7 +75,7 @@ function ladder_ctools_export_ui_form(&$form, &$form_state) {
   $form['css_class'] = array(
     '#type' => 'textfield',
     '#title' => t('CSS Class'),
-    '#description' => t('CSS class or classes to be wrapped around rung.'),
+    '#description' => t('CSS class or classes to be wrapped around rung.'), // TODO Add some defaults to ladder.css and offer as options here.
     '#default_value' => $rung->css_class,
     '#maxlength' => 255,
   );
